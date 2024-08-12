@@ -6,7 +6,7 @@
 5.save data: luu tru
 */
 const fs = require("fs");
-const csv = require("csvtojson"); //
+const csv = require("csvtojson");
 
 const data = {
   data: [

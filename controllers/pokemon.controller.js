@@ -4,19 +4,19 @@ const crypto = require("crypto");
 // @description - get all pokemons
 // @body (id, name, types, url)
 
-// dang lam //////
+//
 const pokemonController = {};
 
 pokemonController.getPokemons = catchAsync(async (req, res, next) => {
-  //// get data from requests - nhan yeu cau
+  // get data from requests - nhan yeu cau
   const currentId = req.id;
   const { id, name, types, url } = req.body;
 
-  //// business logic validation - kiem chung database
+  // business logic validation - kiem chung database
 
-  //// process -xu ly
+  // process -xu ly
 
-  //// response result, success or not
+  // response result, success or not
   return sendResponse(
     res,
     200,

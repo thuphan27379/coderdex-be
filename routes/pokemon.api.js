@@ -16,6 +16,8 @@ const fs = require("fs");
 // @description - search all pokemons details by name
 // @body (name)
 
+// ph?n search pokemon v?i search theo type v?n chýa work, ch? check l?i query c?a frontend v?i backend xem match v?i nhau chýa
+
 router.get("/", (req, res, next) => {
   //input validation:
   const allowedFilter = ["id", "name", "types", "url"];
@@ -23,7 +25,8 @@ router.get("/", (req, res, next) => {
   // console.log(param);
 
   try {
-    let { page, limit, name, types } = req.query; //
+    let { page, limit, name, types } = req.query; // query
+
     page = parseInt(page) || 1;
     limit = parseInt(limit) || 10;
     // console.log(name);
@@ -32,7 +35,7 @@ router.get("/", (req, res, next) => {
     //Number of items skip for selection
     let offset = limit * (page - 1);
     //Read data from db.json then parse to JSobject
-    let db = fs.readFileSync("db.json", "utf-8"); //
+    let db = fs.readFileSync("db.json", "utf-8");
     db = JSON.parse(db);
 
     // res.json(db);
@@ -41,14 +44,21 @@ router.get("/", (req, res, next) => {
     console.log(db);
 
     //Filter data by title
-    let result = [];
+    // let result = [];
+    let result = data;
     let totalPokemons;
 
     if (name) {
-      result = data.filter((pokemon) => pokemon.name === name);
+      result = result.filter(
+        (pokemon) => pokemon.name.toLowerCase() === name.toLowerCase()
+      );
       console.log(result);
     } else if (types) {
-      result = data.filter((pokemon) => pokemon.types.includes(types));
+      // search by type
+      result = result.filter((pokemon) =>
+        pokemon.types.some((type) => type.toLowerCase() === types.toLowerCase())
+      );
+      // .includes(types));
       console.log(types);
     } else {
       result = data;
@@ -60,7 +70,7 @@ router.get("/", (req, res, next) => {
     // res.render(result);
 
     //then select number of result by offset
-    result = result.slice(offset, offset + limit);
+    result = result.slice(limit * (page - 1), limit * page);
 
     //send response:
     res.status(200).send({ data: result, totalPokemons }); //obj voi key la data
@@ -75,7 +85,7 @@ router.get("/", (req, res, next) => {
 // @body (id, description, ...)
 router.get("/:id", (req, res, next) => {
   try {
-    let pokemonId = req.params.id; //
+    let pokemonId = req.params.id;
     console.log(pokemonId);
 
     //processing logic:
@@ -185,19 +195,19 @@ router.post("/", (req, res, next) => {
       }
     }
 
-    // //Add new pokemon JS object
+    // Add new pokemon JS object
     data.push(newPokemon);
-    // //Add new pokemon to db JS object
+    // Add new pokemon to db JS object
     db.data = data;
-    // //db JSobject to JSON string
+    // db JSobject to JSON string
     db.totalPokemons = data.length;
 
     db = JSON.stringify(db);
 
-    // //write and save to db.json
+    // write and save to db.json
     fs.writeFileSync("db.json", db);
 
-    // //post send response:
+    // post send response:
     res.status(200).send({ newPokemon });
   } catch (error) {
     next(error);
